@@ -12,12 +12,12 @@ Clinics sign up, set up their branches and services, and share a branded booking
 
 > **Note on this repository.** This is the public showcase for Oramo. It holds documentation, architecture notes and screenshots. The application source is in a private repository. If you're a hiring manager or engineer who'd like a walkthrough or access, [reach out](#contact).
 
-🔗 **Live demo:** [oramo-demo.vercel.app](https://oramo-demo.vercel.app). It runs as a demo clinic, "Ngiti Dental Care", with seeded, fictional data.
+🔗 **Live demo:** [oramo-jocobadique.vercel.app](https://oramo-jocobadique.vercel.app). It runs as a demo clinic, "Ngiti Dental Care", with seeded, fictional data.
 
 | | |
 | --- | --- |
-| Staff dashboard | [Log in](https://oramo-demo.vercel.app/login) with `demo@oramo.app` / `OramoDemo2026!` |
-| Patient booking page | [oramo-demo.vercel.app/ngiti-dental](https://oramo-demo.vercel.app/ngiti-dental) |
+| Staff dashboard | [Log in](https://oramo-jocobadique.vercel.app/login) with `demo@oramo.app` / `OramoDemo2026!` |
+| Patient booking page | [oramo-jocobadique.vercel.app/ngiti-dental](https://oramo-jocobadique.vercel.app/ngiti-dental) |
 
 The demo login is shared, so please don't enter real patient information.
 
