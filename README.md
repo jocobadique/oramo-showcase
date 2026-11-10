@@ -29,11 +29,11 @@ The demo login is shared, so please don't enter real patient information.
 
 | Today dashboard | Appointments calendar |
 | --- | --- |
-| ![Today dashboard: the day's appointments, pending requests and clinic KPIs](docs/screenshots/dashboard.png) | ![Day view with one column per dentist, color-coded by status](docs/screenshots/calendar.png) |
+| ![Today dashboard: the day's schedule, booking requests, clinic KPIs and SMS credits](docs/screenshots/dashboard.png) | ![Day view with one column per dentist, color-coded by status](docs/screenshots/calendar.png) |
 | **Patient record + odontogram** | **Public booking page** |
 | ![Patient record with allergy banner and the FDI dental chart](docs/screenshots/patient.png) | ![Clinic-branded, mobile-first booking flow](docs/screenshots/booking.png) |
 | **SMS notifications** | **Plan & billing** |
-| ![Notification templates with live SMS segment count](docs/screenshots/notifications.png) | ![Subscription plan, trial status and SMS credits](docs/screenshots/billing.png) |
+| ![Notification templates with live SMS segment count](docs/screenshots/notifications.png) | ![Current plan and per-branch peso pricing tiers](docs/screenshots/billing.png) |
 
 ---
 
