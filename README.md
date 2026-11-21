@@ -29,11 +29,11 @@ Clinics sign up, set up their branches and services, and share a branded booking
 
 | Today dashboard | Appointments calendar |
 | --- | --- |
-| ![Today dashboard: the day's schedule, booking requests, clinic KPIs and SMS credits](docs/screenshots/dashboard.png) | ![Day view with one column per dentist, color-coded by status](docs/screenshots/calendar.png) |
+| ![Today dashboard: the day's schedule, booking requests, KPIs, SMS credits and Quick book](docs/screenshots/dashboard.png) | ![Day view with one column per dentist, color-coded by status](docs/screenshots/calendar.png) |
 | **Patient record + odontogram** | **Public booking page** |
 | ![Patient record with allergy banner and the FDI dental chart](docs/screenshots/patient.png) | ![Clinic-branded, mobile-first booking flow](docs/screenshots/booking.png) |
 | **SMS notifications** | **Plan & billing** |
-| ![Notification templates with live SMS segment count](docs/screenshots/notifications.png) | ![Current plan and per-branch peso pricing tiers](docs/screenshots/billing.png) |
+| ![Notification templates with live SMS segment count](docs/screenshots/notifications.png) | ![Plan, AI assist usage and per-branch peso pricing tiers](docs/screenshots/billing.png) |
 | **AI: dictated chart notes** | **AI: quick book** |
 | ![Spoken dentist shorthand turned into tooth records to check and save](docs/screenshots/ai-chart-notes.png) | ![One spoken or typed line turned into a prefilled booking](docs/screenshots/ai-quickbook.png) |
 
