@@ -4,11 +4,11 @@
 
 # Oramo
 
-**Clinic management software for Philippine dental practices: appointments, dental charting, patient records, SMS reminders and online booking, all in one multi-tenant SaaS.**
+**Clinic management software for Philippine dental practices: appointments, dental charting, patient records, SMS reminders, online booking and AI that books and charts from your voice, all in one multi-tenant SaaS.**
 
 </div>
 
-Clinics sign up, set up their branches and services, and share a branded booking link with patients. Staff run the day from a calendar with one column per dentist. Dentists chart on an FDI odontogram, and patients get SMS and email reminders automatically. Each clinic is isolated from every other clinic **at the database level**, and every clinic can white-label the app with its own logo and color.
+Clinics sign up, set up their branches and services, and share a branded booking link with patients. Staff run the day from a calendar with one column per dentist. Dentists chart on an FDI odontogram, and patients get SMS and email reminders automatically. Staff can also just *say* a booking or a set of chart findings, and Oramo fills in the form for them to check. Each clinic is isolated from every other clinic **at the database level**, and every clinic can white-label the app with its own logo and color.
 
 > **Note on this repository.** This is the public showcase for Oramo. It holds documentation, architecture notes and screenshots. The application source is in a private repository. If you're a hiring manager or engineer who'd like a walkthrough or access, [reach out](#contact).
 
@@ -19,7 +19,7 @@ Clinics sign up, set up their branches and services, and share a branded booking
 | Staff dashboard | [Log in](https://oramo-jocobadique.vercel.app/login) with `demo@oramo.app` / `OramoDemo2026!` |
 | Patient booking page | [oramo-jocobadique.vercel.app/ngiti-dental](https://oramo-jocobadique.vercel.app/ngiti-dental) |
 
-The demo login is shared, so please don't enter real patient information.
+**Try the demo** on the site gives you a private copy of the demo clinic for 24 hours. The login above is shared, so please don't enter real patient information.
 
 ---
 
@@ -34,6 +34,8 @@ The demo login is shared, so please don't enter real patient information.
 | ![Patient record with allergy banner and the FDI dental chart](docs/screenshots/patient.png) | ![Clinic-branded, mobile-first booking flow](docs/screenshots/booking.png) |
 | **SMS notifications** | **Plan & billing** |
 | ![Notification templates with live SMS segment count](docs/screenshots/notifications.png) | ![Current plan and per-branch peso pricing tiers](docs/screenshots/billing.png) |
+| **AI: dictated chart notes** | **AI: quick book** |
+| ![Spoken dentist shorthand turned into tooth records to check and save](docs/screenshots/ai-chart-notes.png) | ![One spoken or typed line turned into a prefilled booking](docs/screenshots/ai-quickbook.png) |
 
 ---
 
@@ -46,6 +48,7 @@ The demo login is shared, so please don't enter real patient information.
 - **Full patient records.** A **PDA-style medical-history questionnaire** stored as structured data, an allergy and medical-alert banner, a treatment timeline, per-patient billing with a printable receipt, and X-ray and photo uploads.
 - **SMS + email notifications.** Request-received, confirmed and cancelled messages, plus 24-hour and 1-hour reminders, sent through a PH SMS gateway. Clinics edit their own templates with a live SMS segment count.
 - **SaaS billing.** Per-branch pricing in pesos, a 14-day trial with no card, and metered SMS credits. It integrates **PayMongo** (GCash, Maya and card) through webhooks.
+- **AI assist.** Staff type or *say* a booking ("Patricia, braces adjustment, next Monday 10 AM, Dr. Garcia"; Taglish works) and the appointment form opens prefilled. Dentists dictate findings in their own shorthand ("36 MO caries, plan composite; 11 fractured, crown planned") and get a list of tooth records to tick, fix and save. AI only fills things in; nothing is saved until a person confirms. Each plan includes a monthly allowance of AI assists.
 - **White-label theming.** Each clinic's primary color and logo re-brand the dashboard and booking page at runtime, in light and dark mode.
 
 ---
@@ -63,6 +66,8 @@ The demo login is shared, so please don't enter real patient information.
 | Client state | **Zustand** (ephemeral UI only) |
 | Payments | **PayMongo** (hosted Checkout + signed webhooks) |
 | Messaging | **Semaphore** (PH SMS) + **Resend** (email), behind swappable provider interfaces |
+| AI | **Claude** via the Anthropic SDK (Haiku 5.5 for quick book, Sonnet 5.5 for chart notes), structured outputs validated with **Zod** |
+| Speech-to-text | **OpenAI** `gpt-4o-transcribe`, with a dental and Taglish vocabulary prompt |
 | Rate limiting | **Upstash Redis** REST, with an in-memory fallback |
 | Deploy | **Vercel** (Singapore) |
 
@@ -80,6 +85,8 @@ A quick tour of the engineering decisions. For the full breakdown, see **[docs/A
 - **Notifications are fired by the database.** A trigger on `appointments` and a 15-minute `pg_cron` sweep both call one Edge Function. A unique index plus claim-then-send makes every message **exactly-once**, even when sweeps overlap.
 - **Billing state comes from webhooks.** PayMongo webhooks are HMAC-verified on the raw body and deduplicated by event ID. Entitlements are never granted from the client redirect. One pure function, `computeEntitlements()`, gates both the UI and the server.
 - **Derived values come from the database.** Clinical charge balances and statuses are computed by triggers. The current dental chart is a pure function over append-only history.
+- **AI fills forms; people save them.** Claude returns structured output in the app's own vocabulary, and the server keeps only what it can verify (ids it sent, real FDI teeth, surfaces that tooth has, future open times), turning everything else into "please check" hints. Chart notes are sent without the patient's name, and patient matching happens in Postgres, never in the model. Usage is metered per plan with an atomic check-and-count in SQL, and failed reads are refunded.
+- **RLS that stays fast.** Policy helpers are written as `(select auth_clinic_id())`, so Postgres evaluates them once per query instead of once per row (5.2 s down to 19 ms on the demo's appointments).
 - **Built for PH from day one.** Times are stored in UTC and shown in Asia/Manila. The app uses PH mobile validation, FDI notation (the standard in PH dental schools), PDA medical-history fields and peso pricing.
 
 ---

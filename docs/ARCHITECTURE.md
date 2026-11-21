@@ -84,6 +84,22 @@ Before the first deploy, a dedicated audit migration closed three issues:
 - **History is append-only, and the chart is derived from it.** `tooth_records` are never overwritten. The current chart is a **pure function** of that history: the latest non-cancelled record per surface, whole-tooth conditions overriding, and planned work drawn as an overlay. Deleting a record is a separate, explicit correction step.
 - **Status is never shown by color alone.** Every state pairs a color with an icon or pattern, in light and dark mode.
 
+## AI assist: AI fills in, people save
+
+Two features, one rule: the model only fills in a form, and nothing is written until a person confirms.
+
+```
+ 🎤 MediaRecorder (≤60 s) ──► /api/ai/transcribe ──► OpenAI gpt-4o-transcribe ──► text (editable)
+ text ──► /api/ai/quick-book ──► Claude Haiku 5.5 ──► validate ──► prefilled appointment form
+ text ──► /api/ai/chart-notes ─► Claude Sonnet 5.5 ─► validate ──► tooth-record review list ──► save
+```
+
+- **Structured output in the app's own vocabulary.** Both prompts return JSON constrained by a Zod schema: service and dentist ids from lists the server sends, FDI tooth numbers, surfaces `M D B L O I`, and the controlled condition, treatment and status enums. Dates come from a three-week calendar in the request, because models are bad at date math.
+- **The server trusts nothing it didn't send.** Unknown ids, impossible teeth, surfaces a tooth doesn't have, past or closed-day times are dropped and turned into "please check" hints. A treatment marked done implies its resulting condition, so the chart colors correctly.
+- **Minimal data to the model.** Quick book sends the typed line plus service names, dentist names and branch hours. Patient matching (mobile first, then name) happens in Postgres under RLS, never in the model. Chart notes are sent without the patient's name or id. Audio goes to the speech-to-text provider only while recording and is not stored; no text or audio is logged.
+- **Metered per plan.** `ai_consume()` checks and counts an assist atomically (row lock on the subscription) against the plan's monthly allowance: trial 50, Starter 200, Pro/Group 600 per billable branch. Failed or empty reads are refunded with `ai_refund()`. The `ai_usage` log has no table grants at all; only these functions touch it.
+- **Graceful failure.** Rate limits per user and per clinic (tighter on the public demo), friendly messages for timeouts, safety refusals, and an empty provider balance or spend cap. Typing and charting by hand always keep working.
+
 ## Billing: two separate systems
 
 | | **Clinical billing** | **SaaS billing** |
@@ -158,7 +174,13 @@ trialing (14 days, no card) ──► active ──► past_due ──(grace)─
 | `0007_saas_billing` | Subscriptions, plan limits, invoices, SMS credits, webhook dedupe |
 | `0008_harden_charge_trigger_search_path` | Pinned `search_path` (Supabase advisor fix) |
 | `0009_security_hardening` | The pre-deploy audit fixes described above |
+| `0010`–`0016` | Function privileges, pricing and founding clinics, legal consent, demo requests, plan ladder and team caps, audit log, clinic reports |
+| `0017`–`0021` | Two-step verification enforced in RLS, platform admin portal, setup checklist, reserved slugs, SMS credit adjustments |
+| `0022`–`0028` | Multi-service visits, atomic SMS top-ups, chairs per branch, patient change/cancel links, HMO claims, clinic two-step rule |
+| `0029_service_follow_up` | Per-service follow-up intervals (recalls) |
+| `0030_rls_initplan` | Policy helpers evaluated once per query: `(select auth_clinic_id())` |
+| `0031_ai_allowance` | Monthly AI allowance per plan, atomic consume and refund |
 
 ## Stack summary
 
-Next.js 16 · React 19 · TypeScript (strict) · Tailwind CSS v4 · shadcn/ui · Supabase (Postgres + RLS + Auth + Storage + Edge Functions + pg_cron) · TanStack Query v5 · Zustand · PayMongo · Semaphore · Resend · Upstash · deployed on Vercel.
+Next.js 16 · React 19 · TypeScript (strict) · Tailwind CSS v4 · shadcn/ui · Supabase (Postgres + RLS + Auth + Storage + Edge Functions + pg_cron) · TanStack Query v5 · Zustand · Claude (Anthropic SDK) · OpenAI speech-to-text · Zod · PayMongo · Semaphore · Resend · Upstash · deployed on Vercel.

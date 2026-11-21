@@ -11,3 +11,5 @@ Images used by the main [README](../../README.md). They're captured at 1440×810
 | `booking.png`       | Public booking page: clinic-branded date and time step (Asia/Manila)         |
 | `notifications.png` | SMS and email template editor with placeholders, live preview, segment count |
 | `billing.png`       | SaaS plan page: current plan, per-branch peso pricing, plan tiers            |
+| `ai-chart-notes.png` | Dictate notes: spoken dentist shorthand as tooth records to check and save   |
+| `ai-quickbook.png`  | Quick book: one typed or spoken line as a prefilled booking form             |
