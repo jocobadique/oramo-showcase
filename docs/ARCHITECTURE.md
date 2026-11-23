@@ -84,6 +84,14 @@ Before the first deploy, a dedicated audit migration closed three issues:
 - **History is append-only, and the chart is derived from it.** `tooth_records` are never overwritten. The current chart is a **pure function** of that history: the latest non-cancelled record per surface, whole-tooth conditions overriding, and planned work drawn as an overlay. Deleting a record is a separate, explicit correction step.
 - **Status is never shown by color alone.** Every state pairs a color with an icon or pattern, in light and dark mode.
 
+## Prescriptions: signed by the database
+
+- **License-gated.** Only an owner or dentist with a PRC license number on their profile can write a prescription. Every member of the clinic can read and reprint them.
+- **The prescriber is stamped, not sent.** A `BEFORE INSERT` trigger fills in the prescriber's id, name and PRC / PTR / S2 numbers from the caller's own profile and checks that the patient and branch belong to the same clinic. The client can't sign as someone else. The numbers are a snapshot, so a reprint stays true if the profile changes.
+- **Void, never edit or delete.** A mistake is voided (by the prescriber or the owner, with an optional reason) and a new one is written, so the record of what was handed to a patient stays intact.
+- **Small, bounded data.** Medicines are a JSON array of 1 to 10 items (generic, brand, strength, form, quantity, sig). Oramo never suggests doses; the dentist writes the instructions.
+- **Real paper sizes.** The sheet is drawn at true size (half letter or letter) and printed through `@page` with no browser header or footer, in light mode whatever the app theme. On a phone it's zoomed down to fit the screen.
+
 ## AI assist: AI fills in, people save
 
 Two features, one rule: the model only fills in a form, and nothing is written until a person confirms.
@@ -180,6 +188,9 @@ trialing (14 days, no card) ──► active ──► past_due ──(grace)─
 | `0029_service_follow_up` | Per-service follow-up intervals (recalls) |
 | `0030_rls_initplan` | Policy helpers evaluated once per query: `(select auth_clinic_id())` |
 | `0031_ai_allowance` | Monthly AI allowance per plan, atomic consume and refund |
+| `0032`–`0035` | One-segment default SMS texts, follow-up due SMS, first-time dashboard tour, owner-only settings and no hard deletes |
+| `0036_prescriptions` | Prescriptions: license-gated, prescriber stamped by trigger, void instead of delete |
+| `0037_feature_hints` | Per-member "seen" state for new-feature hints |
 
 ## Stack summary
 

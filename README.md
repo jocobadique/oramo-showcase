@@ -4,7 +4,7 @@
 
 # Oramo
 
-**Clinic management software for Philippine dental practices: appointments, dental charting, patient records, SMS reminders, online booking and AI that books and charts from your voice, all in one multi-tenant SaaS.**
+**Clinic management software for Philippine dental practices: appointments, dental charting, patient records, printable prescriptions, SMS reminders, online booking and AI that books and charts from your voice, all in one multi-tenant SaaS.**
 
 </div>
 
@@ -36,6 +36,8 @@ Clinics sign up, set up their branches and services, and share a branded booking
 | ![Notification templates with live SMS segment count](docs/screenshots/notifications.png) | ![Plan, AI assist usage and per-branch peso pricing tiers](docs/screenshots/billing.png) |
 | **AI: dictated chart notes** | **AI: quick book** |
 | ![Spoken dentist shorthand turned into tooth records to check and save](docs/screenshots/ai-chart-notes.png) | ![One spoken or typed line turned into a prefilled booking](docs/screenshots/ai-quickbook.png) |
+| **Printable prescription** | **Prescriptions in the patient record** |
+| ![Half-letter prescription on the clinic letterhead, signed with the dentist's PRC and PTR numbers](docs/screenshots/prescription.png) | ![The patient's prescriptions with print and void actions](docs/screenshots/prescriptions-tab.png) |
 
 ---
 
@@ -46,6 +48,7 @@ Clinics sign up, set up their branches and services, and share a branded booking
 - **Public booking page.** Every clinic gets `oramo.app/<slug>`, branded with its logo and color. Patients book without an account, and requests land in the clinic's **Pending requests** queue for staff to confirm.
 - **Dental charting.** An interactive **FDI odontogram** with permanent, primary and mixed dentition and 5-surface teeth. It uses a controlled clinical vocabulary and one-tap treatment templates. History is **append-only**, and the current chart is derived from it.
 - **Full patient records.** A **PDA-style medical-history questionnaire** stored as structured data, an allergy and medical-alert banner, a treatment timeline, per-patient billing with a printable receipt, and X-ray and photo uploads.
+- **Printable prescriptions.** A dentist writes a prescription from the patient's record and prints it on the clinic's letterhead, in half letter or full page, with their PRC, PTR and S2 numbers under the signature line. Only dentists with a PRC license number on file can write one, and a mistake is voided, never edited or deleted.
 - **SMS + email notifications.** Request-received, confirmed and cancelled messages, plus 24-hour and 1-hour reminders, sent through a PH SMS gateway. Clinics edit their own templates with a live SMS segment count.
 - **SaaS billing.** Per-branch pricing in pesos, a 14-day trial with no card, and metered SMS credits. It integrates **PayMongo** (GCash, Maya and card) through webhooks.
 - **AI assist.** Staff type or *say* a booking ("Patricia, braces adjustment, next Monday 10 AM, Dr. Garcia"; Taglish works) and the appointment form opens prefilled. Dentists dictate findings in their own shorthand ("36 MO caries, plan composite; 11 fractured, crown planned") and get a list of tooth records to tick, fix and save. AI only fills things in; nothing is saved until a person confirms. Each plan includes a monthly allowance of AI assists.
@@ -86,6 +89,7 @@ A quick tour of the engineering decisions. For the full breakdown, see **[docs/A
 - **Billing state comes from webhooks.** PayMongo webhooks are HMAC-verified on the raw body and deduplicated by event ID. Entitlements are never granted from the client redirect. One pure function, `computeEntitlements()`, gates both the UI and the server.
 - **Derived values come from the database.** Clinical charge balances and statuses are computed by triggers. The current dental chart is a pure function over append-only history.
 - **AI fills forms; people save them.** Claude returns structured output in the app's own vocabulary, and the server keeps only what it can verify (ids it sent, real FDI teeth, surfaces that tooth has, future open times), turning everything else into "please check" hints. Chart notes are sent without the patient's name, and patient matching happens in Postgres, never in the model. Usage is metered per plan with an atomic check-and-count in SQL, and failed reads are refunded.
+- **The database signs prescriptions.** A `BEFORE INSERT` trigger stamps the prescriber's name and license numbers from the caller's own profile, so a client can't sign as another dentist or claim a license they don't have. The numbers are a snapshot, so a reprint stays true even if the profile changes later.
 - **RLS that stays fast.** Policy helpers are written as `(select auth_clinic_id())`, so Postgres evaluates them once per query instead of once per row (5.2 s down to 19 ms on the demo's appointments).
 - **Built for PH from day one.** Times are stored in UTC and shown in Asia/Manila. The app uses PH mobile validation, FDI notation (the standard in PH dental schools), PDA medical-history fields and peso pricing.
 

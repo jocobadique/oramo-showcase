@@ -13,3 +13,5 @@ Images used by the main [README](../../README.md). They're captured at 1440×810
 | `billing.png`       | SaaS plan page: current plan, AI assist usage, peso pricing, plan tiers      |
 | `ai-chart-notes.png` | Dictate notes: spoken dentist shorthand as tooth records to check and save   |
 | `ai-quickbook.png`  | Quick book: one typed or spoken line as a prefilled booking form             |
+| `prescription.png`  | Half-letter prescription printout with the dentist's PRC and PTR numbers (sheet scaled to fit the frame) |
+| `prescriptions-tab.png` | Patient record, Prescriptions tab: print and void actions                |
