@@ -27,6 +27,8 @@ Clinics sign up, set up their branches and services, and share a branded booking
 
 ![Oramo landing page](docs/screenshots/landing.png)
 
+![Landing features: six numbered tabs pinned beside a sample view of the app; scrolling steps through them](docs/screenshots/features.png)
+
 | Today dashboard | Appointments calendar |
 | --- | --- |
 | ![Today dashboard: the day's schedule, booking requests, KPIs, SMS credits and Quick book](docs/screenshots/dashboard.png) | ![Day view with one column per dentist, color-coded by status](docs/screenshots/calendar.png) |

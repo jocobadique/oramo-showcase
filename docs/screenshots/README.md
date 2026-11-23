@@ -5,6 +5,7 @@ Images used by the main [README](../../README.md). They're captured at 1440×810
 | File                | Shows                                                                        |
 | ------------------- | ---------------------------------------------------------------------------- |
 | `landing.png`       | Marketing landing page (hero)                                                |
+| `features.png`      | Landing features: tabs and sample view pinned while scrolling, on "Dental chart & records" |
 | `dashboard.png`     | Today dashboard: the day's schedule, booking requests, KPI cards, SMS credits |
 | `calendar.png`      | Appointments day view: one column per dentist, color-coded statuses           |
 | `patient.png`       | Patient record: allergy banner, FDI odontogram, Dictate notes button         |
